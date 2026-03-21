@@ -1,11 +1,21 @@
 const field = document.getElementById('field');
 const goal = document.getElementById('goal');
 const goalCoords = document.getElementById('goal-coords');
+const guideToggle = document.getElementById('guide-toggle');
+const guidePanel = document.getElementById('guide-panel');
 const panelToggle = document.getElementById('panel-toggle');
 const controlPanel = document.getElementById('control-panel');
+const overlayToggle = document.getElementById('overlay-toggle');
+const sidebarButtons = document.getElementById('sidebar-buttons');
 const themeToggle = document.getElementById('theme-toggle');
 const themeStatus = document.getElementById('theme-status');
-const panelStateText = document.getElementById('panel-state-text');
+const statusPill = document.getElementById('status-pill');
+const statusDot = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+const btnStart = document.getElementById('btn-start');
+const btnPause = document.getElementById('btn-pause');
+const btnEnd = document.getElementById('btn-end');
+const fieldStatus = document.getElementById('field-status');
 
 const organisms = [
   { x: 18, y: 25, sel: false },
@@ -66,11 +76,35 @@ document.addEventListener('mouseup', function() {
   dragging = false;
 });
 
+guideToggle.addEventListener('click', function() {
+  const isOpen = guidePanel.classList.toggle('open');
+  guideToggle.textContent = isOpen ? '‹' : '›';
+  if (isOpen) {
+    controlPanel.classList.remove('open');
+    panelToggle.textContent = '›';
+    sidebarButtons.classList.remove('shifted-panel');
+    sidebarButtons.classList.add('shifted-guide');
+  } else {
+    sidebarButtons.classList.remove('shifted-guide');
+  }
+});
+
 panelToggle.addEventListener('click', function() {
   const isOpen = controlPanel.classList.toggle('open');
-  panelToggle.classList.toggle('open', isOpen);
   panelToggle.textContent = isOpen ? '‹' : '›';
-  panelStateText.textContent = isOpen ? 'PANEL OPEN' : 'PANEL CLOSED';
+  if (isOpen) {
+    guidePanel.classList.remove('open');
+    guideToggle.textContent = '›';
+    sidebarButtons.classList.remove('shifted-guide');
+    sidebarButtons.classList.add('shifted-panel');
+  } else {
+    sidebarButtons.classList.remove('shifted-panel');
+  }
+});
+
+overlayToggle.addEventListener('click', function() {
+  const hidden = document.body.classList.toggle('overlays-hidden');
+  overlayToggle.classList.toggle('hidden-state', hidden);
 });
 
 themeToggle.addEventListener('click', function() {
@@ -78,6 +112,49 @@ themeToggle.addEventListener('click', function() {
   const isLight = html.getAttribute('data-theme') === 'light';
   html.setAttribute('data-theme', isLight ? 'dark' : 'light');
   themeStatus.textContent = isLight ? 'DARK MODE' : 'LIGHT MODE';
+});
+
+function setStatus(state) {
+  statusPill.className = 'status-pill';
+  if (state === 'running') {
+    statusPill.classList.add('running');
+    statusText.textContent = 'SIMULATION RUNNING';
+    btnStart.disabled = true;
+    btnPause.disabled = false;
+    btnEnd.disabled = false;
+  } else if (state === 'paused') {
+    statusPill.classList.add('paused');
+    statusText.textContent = 'SIMULATION PAUSED';
+    btnStart.disabled = false;
+    btnStart.innerHTML = '&#9654; Resume';
+    btnPause.disabled = true;
+    btnEnd.disabled = false;
+  } else if (state === 'ended') {
+    statusPill.classList.add('ended');
+    statusText.textContent = 'SIMULATION ENDED';
+    btnStart.disabled = false;
+    btnStart.innerHTML = '&#9654; Start';
+    btnPause.disabled = true;
+    btnEnd.disabled = true;
+  } else {
+    statusText.textContent = 'SIMULATION READY';
+    btnStart.disabled = false;
+    btnStart.innerHTML = '&#9654; Start';
+    btnPause.disabled = true;
+    btnEnd.disabled = true;
+  }
+}
+
+btnStart.addEventListener('click', function() {
+  setStatus('running');
+});
+
+btnPause.addEventListener('click', function() {
+  setStatus('paused');
+});
+
+btnEnd.addEventListener('click', function() {
+  setStatus('ended');
 });
 
 document.getElementById('sl-pop').addEventListener('input', function() {
@@ -96,3 +173,7 @@ document.getElementById('sl-gen').addEventListener('input', function() {
 document.getElementById('sl-sel').addEventListener('input', function() {
   document.getElementById('val-sel').textContent = (this.value / 100).toFixed(2);
 });
+
+setTimeout(function() {
+  fieldStatus.classList.add('hidden');
+}, 15000);

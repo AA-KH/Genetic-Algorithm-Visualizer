@@ -14,18 +14,181 @@
 <div id="top-bar">
   <div id="top-bar-left">
     <span id="brand">GENSIM // v0.1</span>
-    <div class="status-pill">
-      <span class="status-dot"></span>
-      SIMULATION READY
+    <div class="status-pill" id="status-pill">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">SIMULATION READY</span>
     </div>
   </div>
+
+  <div id="sim-controls">
+    <button class="sim-btn" id="btn-start" title="Start simulation">&#9654; Start</button>
+    <button class="sim-btn" id="btn-pause" title="Pause simulation" disabled>&#10073;&#10073; Pause</button>
+    <button class="sim-btn danger" id="btn-end" title="End simulation" disabled>&#9632; End</button>
+  </div>
+
   <div id="top-bar-right">
     <span id="theme-status">DARK MODE</span>
     <div id="theme-toggle" title="Toggle light/dark mode"></div>
   </div>
 </div>
 
-<div id="panel-toggle">›</div>
+<div id="sidebar-buttons">
+  <div id="guide-toggle" class="sidebar-btn" title="Open simulation guide">&#8250;</div>
+  <div id="panel-toggle" class="sidebar-btn" title="Open control panel">&#8250;</div>
+  <div id="overlay-toggle" class="sidebar-btn" title="Toggle overlays">
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
+      <path d="M10 4C5.5 4 2 10 2 10C2 10 5.5 16 10 16C14.5 16 18 10 18 10C18 10 14.5 4 10 4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+    </svg>
+  </div>
+</div>
+
+<div id="guide-panel">
+  <div class="panel-label">Simulation Guide</div>
+
+  <div class="guide-purpose-block">
+    <div class="guide-purpose-quote">
+      "This simulation demonstrates how simple evolutionary rules can produce intelligent behavior over time without explicit programming of solutions."
+    </div>
+    <div class="guide-purpose-sub">— Core Purpose of this Simulation</div>
+  </div>
+
+  <div class="guide-section">
+    <div class="guide-section-title"><span class="guide-icon">🔬</span> What This Simulation Is</div>
+    <p class="guide-body">A simplified model of evolution in a controlled digital environment. A group of organisms exists inside a 2D field, each attempting to reach a specific goal position.</p>
+    <div class="guide-tag-row">
+      <span class="guide-tag">Natural Selection</span>
+      <span class="guide-tag">Mutation</span>
+      <span class="guide-tag">Reproduction</span>
+    </div>
+    <div class="guide-result">
+      <span class="guide-result-label">RESULT</span>
+      The population gradually improves its ability to reach the goal over generations.
+    </div>
+  </div>
+
+  <div class="guide-section">
+    <div class="guide-section-title"><span class="guide-icon">🌍</span> Elements of the Simulation</div>
+
+    <div class="guide-element">
+      <div class="guide-element-title">🧬 Organisms</div>
+      <ul class="guide-list">
+        <li>Individual members of the population</li>
+        <li>Each acts as an independent agent</li>
+        <li>Shown as small glowing dots on the field</li>
+        <li>Will move and evolve over generations</li>
+      </ul>
+      <div class="guide-concept">Each organism carries a set of instructions (genes) that determine its behavior.</div>
+    </div>
+
+    <div class="guide-element">
+      <div class="guide-element-title">🎯 Goal State</div>
+      <ul class="guide-list">
+        <li>The objective all organisms attempt to reach</li>
+        <li>Visually distinct and highlighted on the field</li>
+        <li>Can be repositioned by clicking or dragging</li>
+      </ul>
+      <div class="guide-concept">The closer an organism gets to the goal, the better its fitness score.</div>
+    </div>
+
+    <div class="guide-element">
+      <div class="guide-element-title">🧭 Simulation Field</div>
+      <ul class="guide-list">
+        <li>The 2D environment where all organisms exist</li>
+        <li>Acts as the "world" for the experiment</li>
+        <li>No hard boundaries — fully open space</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="guide-section">
+    <div class="guide-section-title"><span class="guide-icon">🎛</span> Control Panel Parameters</div>
+
+    <div class="guide-param">
+      <div class="guide-param-title">👥 Population Size</div>
+      <div class="guide-param-desc">Number of organisms in the simulation.</div>
+      <div class="guide-effect-row">
+        <div class="guide-effect high">↑ Larger → more diversity</div>
+        <div class="guide-effect low">↓ Smaller → faster, less varied</div>
+      </div>
+    </div>
+
+    <div class="guide-param">
+      <div class="guide-param-title">🧪 Mutation Rate</div>
+      <div class="guide-param-desc">Probability of random changes in organisms.</div>
+      <div class="guide-effect-row">
+        <div class="guide-effect high">↑ Higher → more randomness</div>
+        <div class="guide-effect low">↓ Lower → more stable</div>
+      </div>
+    </div>
+
+    <div class="guide-param">
+      <div class="guide-param-title">⏱ Generation Length</div>
+      <div class="guide-param-desc">Steps each organism gets per generation.</div>
+      <div class="guide-effect-row">
+        <div class="guide-effect high">↑ Longer → more time to reach goal</div>
+        <div class="guide-effect low">↓ Shorter → quicker evaluation</div>
+      </div>
+    </div>
+
+    <div class="guide-param">
+      <div class="guide-param-title">⚖️ Selection Pressure</div>
+      <div class="guide-param-desc">How many organisms survive each generation.</div>
+      <div class="guide-effect-row">
+        <div class="guide-effect high">↑ High → only best survive</div>
+        <div class="guide-effect low">↓ Low → more survive, slower gain</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-section">
+    <div class="guide-section-title"><span class="guide-icon">📊</span> Stats Panel Explained</div>
+    <div class="guide-stat-row">
+      <span class="guide-stat-name">👥 Population</span>
+      <span class="guide-stat-desc">Total organisms currently in the system</span>
+    </div>
+    <div class="guide-stat-row">
+      <span class="guide-stat-name">🏆 Best Fitness</span>
+      <span class="guide-stat-desc">Score of the best performer — based on distance to goal</span>
+    </div>
+    <div class="guide-stat-row">
+      <span class="guide-stat-name">🔁 Generation</span>
+      <span class="guide-stat-desc">Current iteration of the simulation cycle</span>
+    </div>
+  </div>
+
+  <div class="guide-section">
+    <div class="guide-section-title"><span class="guide-icon">🧠</span> Conceptual Flow</div>
+    <div class="guide-flow">
+      <div class="guide-flow-step">Initialize Population</div>
+      <div class="guide-flow-arrow">↓</div>
+      <div class="guide-flow-step">Organisms Attempt to Reach Goal</div>
+      <div class="guide-flow-arrow">↓</div>
+      <div class="guide-flow-step">Evaluate Fitness</div>
+      <div class="guide-flow-arrow">↓</div>
+      <div class="guide-flow-step">Select Best Performers</div>
+      <div class="guide-flow-arrow">↓</div>
+      <div class="guide-flow-step">Reproduce + Mutate</div>
+      <div class="guide-flow-arrow">↓</div>
+      <div class="guide-flow-step">Next Generation → Repeat</div>
+    </div>
+  </div>
+
+  <div class="guide-section">
+    <div class="guide-section-title"><span class="guide-icon">🧪</span> Your Role</div>
+    <p class="guide-body">You are the experiment controller. You adjust parameters, change the goal position, and observe system behavior. You are not controlling organisms directly — you control the <em>conditions</em> under which evolution occurs.</p>
+  </div>
+
+  <div class="guide-section guide-section-last">
+    <div class="guide-section-title"><span class="guide-icon">⚙️</span> Why This Is Interesting</div>
+    <div class="guide-insight-list">
+      <div class="guide-insight">Simple rules create complex behavior</div>
+      <div class="guide-insight">Systems improve without direct control</div>
+      <div class="guide-insight">Randomness + selection leads to intelligence</div>
+    </div>
+    <div class="guide-closing">Intelligence can emerge from iteration, not instruction.</div>
+  </div>
+</div>
 
 <div id="control-panel">
   <div class="panel-label">Control Panel</div>
@@ -60,13 +223,6 @@
       <span class="param-value" id="val-sel">0.60</span>
     </div>
     <input type="range" id="sl-sel" min="10" max="100" value="60">
-  </div>
-
-  <hr class="panel-divider">
-
-  <div class="panel-status">
-    <span class="status-dot"></span>
-    <span id="panel-state-text">PANEL OPEN</span>
   </div>
 </div>
 
