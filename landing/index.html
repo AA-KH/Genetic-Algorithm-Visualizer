@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genetic Algorithm Visualizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">     
 </head>
-<body class="dark">
+<body>
 
-<div class="toggle">
-    <span>Dark Mode</span>
-
-    <label class="switch">
-        <input type="checkbox" id="themeToggle">
-        <span class="slider"></span>
-    </label>
+<div class="toggle-panel">
+    <span id="theme-status">DARK MODE</span>
+    <div id="theme-toggle" title="Toggle light/dark mode"></div>
 </div>
 
 <canvas id = "canvas"></canvas> 

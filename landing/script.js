@@ -1,12 +1,25 @@
 // TOGGLE
 
-let toggle = document.getElementById("themeToggle");
+const THEME_STORAGE_KEY = "ga-visualizer-theme";
+let themeToggle = document.getElementById("theme-toggle");
+let themeStatus = document.getElementById("theme-status");
 let enterSimulationBtn = document.getElementById("enterSimulationBtn");
 
-toggle.addEventListener("change", () => {
-document.body.classList.toggle("light");
-document.body.classList.toggle("dark");
+function applyTheme(theme) {
+document.documentElement.setAttribute("data-theme", theme);
+themeStatus.textContent = theme === "light" ? "LIGHT MODE" : "DARK MODE";
+localStorage.setItem(THEME_STORAGE_KEY, theme);
+}
+
+const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "dark";
+applyTheme(savedTheme);
+
+if (themeToggle) {
+themeToggle.addEventListener("click", () => {
+const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+applyTheme(currentTheme === "light" ? "dark" : "light");
 });
+}
 
 if (enterSimulationBtn) {
 enterSimulationBtn.addEventListener("click", () => {

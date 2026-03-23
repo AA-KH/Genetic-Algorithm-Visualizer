@@ -16,6 +16,7 @@ const btnStart = document.getElementById('btn-start');
 const btnPause = document.getElementById('btn-pause');
 const btnEnd = document.getElementById('btn-end');
 const fieldStatus = document.getElementById('field-status');
+const THEME_STORAGE_KEY = 'ga-visualizer-theme';
 
 const organisms = [
   { x: 18, y: 25, sel: false },
@@ -107,11 +108,18 @@ overlayToggle.addEventListener('click', function() {
   overlayToggle.classList.toggle('hidden-state', hidden);
 });
 
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeStatus.textContent = theme === 'light' ? 'LIGHT MODE' : 'DARK MODE';
+  localStorage.setItem(THEME_STORAGE_KEY, theme);
+}
+
+applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || 'dark');
+
 themeToggle.addEventListener('click', function() {
   const html = document.documentElement;
   const isLight = html.getAttribute('data-theme') === 'light';
-  html.setAttribute('data-theme', isLight ? 'dark' : 'light');
-  themeStatus.textContent = isLight ? 'DARK MODE' : 'LIGHT MODE';
+  applyTheme(isLight ? 'dark' : 'light');
 });
 
 function setStatus(state) {
