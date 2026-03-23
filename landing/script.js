@@ -1,11 +1,18 @@
 // TOGGLE
 
 let toggle = document.getElementById("themeToggle");
+let enterSimulationBtn = document.getElementById("enterSimulationBtn");
 
 toggle.addEventListener("change", () => {
 document.body.classList.toggle("light");
 document.body.classList.toggle("dark");
 });
+
+if (enterSimulationBtn) {
+enterSimulationBtn.addEventListener("click", () => {
+window.location.href = "../simulation/index.html";
+});
+}
 
 
 // PARTICLES

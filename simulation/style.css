@@ -122,7 +122,7 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  flex-shrink: 0;
+  flex: 1
 }
 
 #brand {
@@ -228,6 +228,8 @@ body {
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 #theme-status {
@@ -443,7 +445,7 @@ input[type="range"]::-moz-range-thumb {
 .stats-label {
   font-family: 'Share Tech Mono', monospace;
   font-size: 9px;
-  color: var(--text-muted);
+  color: var(--accent);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-bottom: 14px;
@@ -625,15 +627,8 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-primary);
   line-height: 1.6;
   font-style: italic;
-  margin-bottom: 8px;
-}
-
-.guide-purpose-sub {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 9px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  opacity: 0.8;
+  /* margin-bottom: 4px;
+  margin-top: 4px; */
 }
 
 .guide-section {
@@ -649,7 +644,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .guide-section-title {
-  font-size: 13px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: 0.06em;
@@ -725,7 +720,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .guide-element-title {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 7px;
@@ -868,12 +863,12 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1;
 }
 
-.guide-insight-list {
+/* .guide-insight-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-bottom: 12px;
-}
+} */
 
 .guide-insight {
   font-size: 11px;
