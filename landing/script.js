@@ -23,7 +23,7 @@ applyTheme(currentTheme === "light" ? "dark" : "light");
 
 if (enterSimulationBtn) {
 enterSimulationBtn.addEventListener("click", () => {
-window.location.href = "../simulation/index.html";
+window.location.href = "../loading/index.html";
 });
 }
 
