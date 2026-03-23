@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetic Algorithm Visualizer</title>
+    <link rel="stylesheet" href="style.css">     
+</head>
+<body class="dark">
+
+<!-- Toggle -->
+<div class="toggle">
+    <span>Dark Mode</span>
+
+    <label class="switch">
+        <input type="checkbox" id="themeToggle">
+        <span class="slider"></span>
+    </label>
+</div>
+
+<!-- Background -->
+<canvas id = "canvas"></canvas> 
+
+<!-- Section 1 (Heading, button) -->
+<div class="content">
+
+<h1>Genetic Algorithm Visualizer</h1>  
+
+<button class="enter-btn">
+    Enter Visualization Field
+</button>
+
+</div>
+
+<!-- Section 2 (3 Boxes) -->                <!-- Second scroll  -->
+<section class ="info-section">
+   <div class="container">
+    <div class ="box hidden">
+        <div class ="icon">🧬</div>
+        <h2>What are Genetic Algorithms?</h2>
+        <p>
+            Genetic algorithms are search and optimization techniques inspired by natural selection.
+            They evolve solutions over time using processes like selection, crossover, and mutation.
+        </p>
+    </div>
+
+<div class="box hidden">
+    <div class="icon">⚡</div>
+    <h2>How Our Visualizer Works</h2>
+    <p>
+        Our visualizer simulates evolving agents that learn to reach goals through
+        fitness evaluation and genetic operations step by step.
+    </p>
+</div>    
+
+<div class="box hidden">
+    <div class="icon">🎯</div>
+    <h2>Our goal</h2>
+    <p>
+        Our goal is to make complex algorithms easy to understand through interactive visuals, 
+        helping students and developers learn in an intuitive and engaging way.
+    </p>
+</div>
+   </div>    
+</section>
+
+<!-- Third Scroll -->
+<section class = "stack-section">  
+    <div class="container">
+    <div class = "stack-card">
+        <h2>What are Genetic Algorithm?</h2>
+
+        <div class="stack-content">
+            <img src = "https://towardsdatascience.com/wp-content/uploads/2022/12/0N0GA0bVPo_bPC-0--scaled.jpg" alt="Genetic Algorithm">
+            <p>Genetic algorithms are inspired by the process of natural evolution. 
+            They work by creating a population of possible solutions and improving them 
+            over generations using selection, crossover, and mutation. Over time, 
+            the best solutions survive and evolve toward optimal results.</p>
+
+        </div>
+    </div>
+
+    <div class="stack-card">
+        <h2>How are Visualizer Works?</h2>
+
+        <div class="stack-content">
+            <img src="https://smartmobilityalgorithms.github.io/book/_images/de0d647b536d7070aa29a0699e85a7b4880ec6dc11d491187b2c5669dfd0b5c7.png" alt="Visualizer">
+            <p>
+                Our visualizer simulates how agents evolve step by step. Each generation 
+                improves based on fitness evaluation. Users can observe how solutions 
+                adapt and improve dynamically, making complex algorithms easier to understand.
+            </p>
+        </div>
+    </div>
+
+    <div class= "stack-card">
+        <h2>Our Goal</h2>
+
+        <div class="stack-content">
+            <img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs42003-019-0456-9/MediaObjects/42003_2019_456_Fig1_HTML.png" alt="Goal">
+            <p>
+                Our goal is to simplify the learning of complex algorithms through 
+                interactive visualization. We aim to make abstract concepts intuitive, 
+                helping students and developers grasp evolutionary computation easily.
+            </p>
+        </div>
+    </div>
+
+    </div>
+</section>
+
+<script src="script.js"></script>
+
+</body>
+</html>
