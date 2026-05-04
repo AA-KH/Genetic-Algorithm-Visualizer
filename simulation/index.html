@@ -217,6 +217,16 @@
     </div>
     <input type="range" id="sl-sel" min="10" max="100" value="60">
   </div>
+
+  <div class="param-block param-block-toggle">
+    <div class="param-header">
+      <span class="param-name">Stop on Goal</span>
+      <span class="param-value" id="stop-on-goal-label">OFF</span>
+    </div>
+    <div id="stop-on-goal-toggle" class="toggle-track">
+      <div class="toggle-thumb"></div>
+    </div>
+  </div>
 </div>
 
 <div id="stats-panel">
@@ -235,6 +245,41 @@
   <div class="stat-row">
     <span class="stat-name">Generation</span>
     <span class="stat-val">0</span>
+  </div>
+</div>
+
+<div id="analytics-panel">
+  <div class="analytics-header">
+    <span class="analytics-title">POST-SIMULATION REPORT</span>
+    <button id="analytics-dismiss" class="analytics-dismiss">✕ CLOSE</button>
+  </div>
+
+  <div class="analytics-grid">
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">GENERATIONS</span>
+      <span class="analytics-stat-val" id="an-generations">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">BEST FITNESS</span>
+      <span class="analytics-stat-val" id="an-best-fitness">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">GOAL REACHES</span>
+      <span class="analytics-stat-val" id="an-goal-reaches">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">FIRST GOAL AT</span>
+      <span class="analytics-stat-val" id="an-first-goal">—</span>
+    </div>
+    <div class="analytics-stat analytics-stat-wide">
+      <span class="analytics-stat-label">AVG BEST FITNESS</span>
+      <span class="analytics-stat-val" id="an-avg-fitness">—</span>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-label">FITNESS PROGRESSION BY GENERATION</div>
+    <div id="fitness-chart" class="fitness-chart"></div>
   </div>
 </div>
 

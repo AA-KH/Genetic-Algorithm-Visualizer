@@ -891,3 +891,197 @@ input[type="range"]::-moz-range-thumb {
   background: var(--guide-flow-bg);
   line-height: 1.5;
 }
+
+.param-block-toggle {
+  margin-top: 6px;
+}
+
+.toggle-track {
+  width: 42px;
+  height: 22px;
+  background: var(--accent-dim);
+  border: 1px solid var(--glass-border);
+  border-radius: 11px;
+  cursor: pointer;
+  position: relative;
+  margin-top: 6px;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.toggle-track.active {
+  background: rgba(74, 222, 128, 0.18);
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 50%;
+  transition: transform 0.3s, background 0.3s;
+}
+
+.toggle-track.active .toggle-thumb {
+  transform: translateX(20px);
+  background: #4ade80;
+}
+
+@keyframes winner-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,225,60,0.9), 0 0 44px rgba(255,225,60,0.5); }
+  50% { box-shadow: 0 0 32px rgba(255,225,60,1), 0 0 64px rgba(255,225,60,0.7); }
+}
+
+[data-theme="light"] .organism-winner {
+  background: rgba(220,100,10,0.98) !important;
+  animation: winner-pulse-light 1.2s ease-in-out infinite !important;
+  width: 15px !important;
+  height: 15px !important;
+  z-index: 8 !important;
+}
+
+@keyframes winner-pulse-light {
+  0%, 100% { box-shadow: 0 0 20px rgba(220,100,10,0.9), 0 0 44px rgba(220,100,10,0.5); }
+  50% { box-shadow: 0 0 32px rgba(220,100,10,1), 0 0 64px rgba(220,100,10,0.7); }
+}
+
+.organism-winner {
+  background: rgba(255,225,60,0.98) !important;
+  animation: winner-pulse 1.2s ease-in-out infinite !important;
+  width: 15px !important;
+  height: 15px !important;
+  z-index: 8 !important;
+}
+
+#analytics-panel {
+  position: fixed;
+  bottom: -420px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(720px, 92vw);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px 16px 0 0;
+  box-shadow: var(--glass-shadow);
+  z-index: 200;
+  padding: 22px 26px 28px;
+  transition: bottom 0.55s cubic-bezier(0.4,0,0.2,1), background 0.35s, border-color 0.35s;
+}
+
+#analytics-panel.open {
+  bottom: 0;
+}
+
+.analytics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 14px;
+}
+
+.analytics-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.18em;
+}
+
+.analytics-dismiss {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.analytics-dismiss:hover {
+  color: #f87171;
+  border-color: rgba(248,113,113,0.35);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.analytics-stat {
+  background: var(--accent-dim);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.analytics-stat-wide {
+  grid-column: span 4;
+}
+
+.analytics-stat-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.14em;
+}
+
+.analytics-stat-val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 20px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.analytics-stat-wide .analytics-stat-val {
+  font-size: 16px;
+}
+
+.chart-section {
+  margin-top: 4px;
+}
+
+.chart-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+}
+
+.fitness-chart {
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  background: var(--accent-dim);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 6px 8px 0;
+  overflow: hidden;
+}
+
+.chart-bar {
+  flex: 1;
+  min-width: 3px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.chart-bar:hover {
+  opacity: 1;
+}
