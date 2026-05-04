@@ -215,7 +215,7 @@
       <span class="param-name">Selection Pressure</span>
       <span class="param-value" id="val-sel">0.60</span>
     </div>
-    <input type="range" id="sl-sel" min="10" max="100" value="60">
+    <input type="range" id="sl-sel" min="1" max="99" value="60">
   </div>
 
   <div class="param-block param-block-toggle">
@@ -250,17 +250,17 @@
 
 <div id="analytics-panel">
   <div class="analytics-header">
-    <span class="analytics-title">POST-SIMULATION REPORT</span>
+    <span class="analytics-title">⬡ POST-SIMULATION REPORT</span>
     <button id="analytics-dismiss" class="analytics-dismiss">✕ CLOSE</button>
   </div>
 
   <div class="analytics-grid">
     <div class="analytics-stat">
-      <span class="analytics-stat-label">GENERATIONS</span>
+      <span class="analytics-stat-label">GENERATIONS RUN</span>
       <span class="analytics-stat-val" id="an-generations">—</span>
     </div>
     <div class="analytics-stat">
-      <span class="analytics-stat-label">BEST FITNESS</span>
+      <span class="analytics-stat-label">CLOSEST TO GOAL</span>
       <span class="analytics-stat-val" id="an-best-fitness">—</span>
     </div>
     <div class="analytics-stat">
@@ -271,15 +271,44 @@
       <span class="analytics-stat-label">FIRST GOAL AT</span>
       <span class="analytics-stat-val" id="an-first-goal">—</span>
     </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">POPULATION SIZE</span>
+      <span class="analytics-stat-val" id="an-pop-size">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">MUTATION RATE</span>
+      <span class="analytics-stat-val" id="an-mut-rate">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">SELECTION PRESSURE</span>
+      <span class="analytics-stat-val" id="an-sel-pressure">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">GEN LENGTH</span>
+      <span class="analytics-stat-val" id="an-gen-length">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">STAGNATION RECOVERIES</span>
+      <span class="analytics-stat-val" id="an-stagnation">—</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">STOP ON GOAL</span>
+      <span class="analytics-stat-val" id="an-stop-on-goal">—</span>
+    </div>
     <div class="analytics-stat analytics-stat-wide">
-      <span class="analytics-stat-label">AVG BEST FITNESS</span>
+      <span class="analytics-stat-label">AVG FITNESS SCORE (all generations)</span>
       <span class="analytics-stat-val" id="an-avg-fitness">—</span>
     </div>
   </div>
 
   <div class="chart-section">
-    <div class="chart-label">FITNESS PROGRESSION BY GENERATION</div>
+    <div class="chart-label">FITNESS SCORE PROGRESSION BY GENERATION</div>
     <div id="fitness-chart" class="fitness-chart"></div>
+  </div>
+
+  <div class="chart-section" style="margin-top:16px;">
+    <div class="chart-label">PATH EVOLUTION — BEST ORGANISM ROUTE OVER TIME</div>
+    <div id="path-snapshots" class="path-snapshots"></div>
   </div>
 </div>
 

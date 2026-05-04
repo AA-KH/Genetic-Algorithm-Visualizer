@@ -957,38 +957,42 @@ input[type="range"]::-moz-range-thumb {
 
 #analytics-panel {
   position: fixed;
-  bottom: -420px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(720px, 92vw);
+  inset: 0;
   background: var(--glass-bg);
   backdrop-filter: var(--blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px 16px 0 0;
-  box-shadow: var(--glass-shadow);
-  z-index: 200;
-  padding: 22px 26px 28px;
-  transition: bottom 0.55s cubic-bezier(0.4,0,0.2,1), background 0.35s, border-color 0.35s;
+  border: none;
+  border-top: 1px solid var(--glass-border);
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 300;
+  padding: 28px 40px 32px;
+  overflow-y: auto;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(60px);
+  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1), background 0.35s;
 }
 
 #analytics-panel.open {
-  bottom: 0;
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
 }
 
 .analytics-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 14px;
+  padding-bottom: 16px;
 }
 
 .analytics-title {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11px;
+  font-size: 15px;
   color: var(--accent);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
 }
 
 .analytics-dismiss {
@@ -1011,9 +1015,10 @@ input[type="range"]::-moz-range-thumb {
 
 .analytics-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
+  max-width: 1100px;
 }
 
 .analytics-stat {
@@ -1027,7 +1032,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .analytics-stat-wide {
-  grid-column: span 4;
+  grid-column: span 5;
 }
 
 .analytics-stat-label {
@@ -1062,7 +1067,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .fitness-chart {
-  height: 72px;
+  height: 100px;
   display: flex;
   align-items: flex-end;
   gap: 2px;
@@ -1071,6 +1076,7 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 8px;
   padding: 6px 8px 0;
   overflow: hidden;
+  max-width: 1100px;
 }
 
 .chart-bar {
@@ -1084,4 +1090,17 @@ input[type="range"]::-moz-range-thumb {
 
 .chart-bar:hover {
   opacity: 1;
+}
+
+.path-snapshots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: var(--accent-dim);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  max-width: 1100px;
+  min-height: 100px;
+  align-items: flex-start;
 }
