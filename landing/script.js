@@ -1,5 +1,3 @@
-// TOGGLE
-
 const THEME_STORAGE_KEY = "ga-visualizer-theme";
 let themeToggle = document.getElementById("theme-toggle");
 let themeStatus = document.getElementById("theme-status");
@@ -26,9 +24,6 @@ enterSimulationBtn.addEventListener("click", () => {
 window.location.href = "../loading/index.html";
 });
 }
-
-
-// PARTICLES
 
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
@@ -72,9 +67,6 @@ requestAnimationFrame(animate);
 }
 
 animate();
-
-
-// SCROLL ANIMATION
 
 let elements = document.querySelectorAll(".hidden");
 

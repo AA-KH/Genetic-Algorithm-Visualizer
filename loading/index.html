@@ -198,31 +198,48 @@
 </div>
 
 <script>
-  const savedTheme = localStorage.getItem('ga-visualizer-theme') || 'dark';
+  var savedTheme = localStorage.getItem('ga-visualizer-theme');
+
+  if (!savedTheme) {
+    savedTheme = 'dark';
+  }
+
   document.documentElement.setAttribute('data-theme', savedTheme);
 
-  const stages = [
-    { text: 'Initializing simulation environment...', progress: 0 },
-    { text: 'Generating initial population...', progress: 20 },
-    { text: 'Encoding organism structures...', progress: 40 },
-    { text: 'Calibrating mutation parameters...', progress: 60 },
-    { text: 'Preparing evolutionary cycle...', progress: 80 },
-    { text: 'Simulation ready.', progress: 100 },
-  ];
+  var label = document.getElementById('stage-label');
+  var bar = document.getElementById('progress-bar');
 
-  const label = document.getElementById('stage-label');
-  const bar = document.getElementById('progress-bar');
-  const delays = [0, 1400, 2800, 4200, 5600, 7000];
+  function showStage(text, progress) {
+    label.style.animation = 'none';
+    label.offsetHeight;
+    label.style.animation = '';
+    label.textContent = text;
+    bar.style.width = progress + '%';
+  }
 
-  stages.forEach(function(stage, i) {
-    setTimeout(function() {
-      label.style.animation = 'none';
-      label.offsetHeight;
-      label.style.animation = '';
-      label.textContent = stage.text;
-      bar.style.width = stage.progress + '%';
-    }, delays[i]);
-  });
+  setTimeout(function() {
+    showStage('Initializing simulation environment...', 0);
+  }, 0);
+
+  setTimeout(function() {
+    showStage('Generating initial population...', 20);
+  }, 1400);
+
+  setTimeout(function() {
+    showStage('Encoding organism structures...', 40);
+  }, 2800);
+
+  setTimeout(function() {
+    showStage('Calibrating mutation parameters...', 60);
+  }, 4200);
+
+  setTimeout(function() {
+    showStage('Preparing evolutionary cycle...', 80);
+  }, 5600);
+
+  setTimeout(function() {
+    showStage('Simulation ready.', 100);
+  }, 7000);
 
   setTimeout(function() {
     document.body.classList.add('fade-out');
