@@ -1,5 +1,3 @@
-// ─── GET ALL THE HTML ELEMENTS WE NEED ───────────────────────────────────────
-
 var field = document.getElementById('field');
 var goal = document.getElementById('goal');
 var goalCoords = document.getElementById('goal-coords');
@@ -32,7 +30,6 @@ var analyticsPanel = document.getElementById('analytics-panel');
 var analyticsDismiss = document.getElementById('analytics-dismiss');
 var themeStorageKey = 'ga-visualizer-theme';
 
-// ─── GOAL POSITION ────────────────────────────────────────────────────────────
 
 var goalX = window.innerWidth * 0.62;
 var goalY = window.innerHeight * 0.38;
@@ -48,7 +45,6 @@ function placeGoal(x, y) {
 
 placeGoal(goalX, goalY);
 
-// drag the goal around
 var dragging = false;
 var dragOffsetX = 0;
 var dragOffsetY = 0;
@@ -72,7 +68,6 @@ field.addEventListener('click', function(e) {
   placeGoal(e.clientX, e.clientY);
 });
 
-// ─── SIDEBAR PANELS ───────────────────────────────────────────────────────────
 
 guideToggle.addEventListener('click', function() {
   if (guidePanel.classList.contains('open')) {
@@ -114,7 +109,6 @@ overlayToggle.addEventListener('click', function() {
   }
 });
 
-// ─── THEME ────────────────────────────────────────────────────────────────────
 
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
@@ -127,8 +121,6 @@ themeToggle.addEventListener('click', function() {
   var current = document.documentElement.getAttribute('data-theme');
   applyTheme(current === 'light' ? 'dark' : 'light');
 });
-
-// ─── SLIDER LABELS ────────────────────────────────────────────────────────────
 
 populationSlider.addEventListener('input', function() {
   populationValue.textContent = populationSlider.value;
@@ -144,7 +136,6 @@ selectionSlider.addEventListener('input', function() {
   selectionValue.textContent = (selectionSlider.value / 100).toFixed(2);
 });
 
-// ─── STOP ON GOAL TOGGLE ─────────────────────────────────────────────────────
 
 var stopOnGoal = false;
 stopOnGoalToggle.addEventListener('click', function() {
@@ -155,7 +146,6 @@ stopOnGoalToggle.addEventListener('click', function() {
 
 setTimeout(function() { fieldStatus.classList.add('hidden'); }, 15000);
 
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
 var SPAWN_X_RATIO = 0.12;
 var SPAWN_Y_RATIO = 0.82;
@@ -167,7 +157,6 @@ var TRAIL_INTERVAL = 5;
 var STAGNATION_LIMIT = 5;
 var PATH_RECORD_INTERVAL = 4;
 
-// ─── SIMULATION STATE OBJECT ─────────────────────────────────────────────────
 
 var sim = {
   running: false,
@@ -192,33 +181,22 @@ var sim = {
   bestEverPath: [],
   bestEverFitness: 0,
   pathSnapshots: [],
-  // track which organism index is currently the "best" (yellow) right now
   currentBestIdx: 0
 };
 
-// ─── SIMPLE MATH HELPERS ─────────────────────────────────────────────────────
-
-// random number between a and b
 function rnd(a, b) {
   return a + Math.random() * (b - a);
 }
 
-// distance between two points
 function dist(ax, ay, bx, by) {
   var dx = ax - bx;
   var dy = ay - by;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// ─── GENE CREATION ───────────────────────────────────────────────────────────
-// Each gene is a small push (acceleration) the organism gets at that tick.
-// Generation 1 is completely random — the algorithm discovers the goal on its own
-// purely through selection pressure over many generations.
-
 function makeGenes(genLen) {
   var genes = [];
   for (var i = 0; i < genLen; i++) {
-    // Fully random direction and magnitude — no knowledge of where the goal is
     var angle = rnd(0, Math.PI * 2);
     var mag = rnd(0.3, 1.0);
     genes.push({
@@ -229,18 +207,12 @@ function makeGenes(genLen) {
   return genes;
 }
 
-// ─── MUTATION ────────────────────────────────────────────────────────────────
-// Takes a child's genes (inherited from parents) and randomly changes some of them.
-// No knowledge of the goal — just random noise applied to inherited genes.
-// Over generations, the good changes accumulate and bad ones get selected out.
-
 function mutateGenes(genes, rate) {
   var newGenes = [];
   for (var i = 0; i < genes.length; i++) {
     var g = genes[i];
 
     if (Math.random() < rate) {
-      // Full replacement with a brand new random gene
       var angle = rnd(0, Math.PI * 2);
       var mag = rnd(0.3, 1.0);
       newGenes.push({
@@ -248,59 +220,37 @@ function mutateGenes(genes, rate) {
         ay: Math.sin(angle) * mag
       });
     } else if (Math.random() < rate * 0.5) {
-      // Small nudge — keeps roughly the same direction with a little variation
       newGenes.push({
         ax: g.ax + rnd(-0.3, 0.3),
         ay: g.ay + rnd(-0.3, 0.3)
       });
     } else {
-      // Keep the gene exactly as inherited — most genes survive unchanged
       newGenes.push({ ax: g.ax, ay: g.ay });
     }
   }
   return newGenes;
 }
 
-// ─── CROSSOVER ───────────────────────────────────────────────────────────────
-// Mix two parents' genes together at a random cut point.
-
 function crossover(genesA, genesB) {
   var cut = Math.floor(Math.random() * genesA.length);
   return genesA.slice(0, cut).concat(genesB.slice(cut));
 }
 
-// ─── FITNESS CALCULATION ─────────────────────────────────────────────────────
-// How good was this organism? Higher score = better.
-// This is what drives the whole algorithm — good scores mean your genes get
-// passed on. Bad scores mean you don't reproduce.
-
 function calcFitness(org, genLen) {
-  // PRIMARY score: the closest it EVER got to the goal during the whole generation.
-  // Using closest-ever (not final position) means an organism is rewarded for
-  // getting near the goal even briefly. This is the main selection pressure —
-  // every generation, the ones that got closer win.
   var closestScore = 1 / (org.closestDist + 1);
 
-  // SECONDARY score: where it ended up. Smaller bonus than closestDist.
-  // This helps break ties and nudges organisms to stay near the goal, not just pass by.
   var finalDist = dist(org.x, org.y, goalX, goalY);
   var finalScore = (1 / (finalDist + 1)) * 0.3;
 
-  // Big bonus if it actually reached the goal
   var reachedBonus = org.reached ? 2.0 : 0;
 
-  // If it reached the goal faster, extra bonus
   var timeBonus = 0;
   if (org.reached && org.reachedTick > 0) {
     timeBonus = (1 - org.reachedTick / genLen) * 0.8;
   }
 
-  // closestScore is the dominant term — that's intentional.
-  // It means "how close did you get?" is the #1 thing that matters.
   return closestScore + finalScore + reachedBonus + timeBonus;
 }
-
-// ─── MAKE A BLANK ORGANISM OBJECT ────────────────────────────────────────────
 
 function makeOrganism(x, y, genes) {
   return {
@@ -322,8 +272,6 @@ function makeOrganism(x, y, genes) {
   };
 }
 
-// ─── BUILD STARTING POPULATION ───────────────────────────────────────────────
-
 function initPopulation() {
   var count = parseInt(populationSlider.value);
   var genLen = parseInt(generationSlider.value);
@@ -338,10 +286,7 @@ function initPopulation() {
   }
 }
 
-// ─── RENDER (CREATE DOM ELEMENTS FOR) ALL ORGANISMS ─────────────────────────
-
 function renderOrganisms() {
-  // remove old elements
   for (var i = 0; i < sim.elems.length; i++) {
     if (sim.elems[i] && sim.elems[i].parentNode) {
       sim.elems[i].parentNode.removeChild(sim.elems[i]);
@@ -349,7 +294,6 @@ function renderOrganisms() {
   }
   sim.elems = [];
 
-  // create new elements
   for (var j = 0; j < sim.organisms.length; j++) {
     var el = document.createElement('div');
     el.className = 'organism';
@@ -360,19 +304,14 @@ function renderOrganisms() {
   }
 }
 
-// ─── MOVE AN ORGANISM'S DOM ELEMENT ─────────────────────────────────────────
-
 function moveElem(el, x, y) {
   el.style.transform = 'translate(' + (x - 5) + 'px,' + (y - 5) + 'px)';
 }
-
-// ─── STYLE AN ORGANISM (COLOR, SIZE, GLOW) ──────────────────────────────────
 
 function styleOrganism(el, org) {
   var light = document.documentElement.getAttribute('data-theme') === 'light';
 
   if (org.elite) {
-    // yellow / orange — the current best performer
     el.style.width = '14px';
     el.style.height = '14px';
     el.style.zIndex = '6';
@@ -381,14 +320,12 @@ function styleOrganism(el, org) {
       ? '0 0 18px rgba(220,100,10,0.8),0 0 36px rgba(220,100,10,0.4)'
       : '0 0 18px rgba(255,225,60,0.8),0 0 36px rgba(255,225,60,0.4)';
   } else if (org.reached) {
-    // green — reached the goal
     el.style.width = '11px';
     el.style.height = '11px';
     el.style.zIndex = '4';
     el.style.background = light ? 'rgba(50,160,80,0.9)' : 'rgba(74,222,128,0.9)';
     el.style.boxShadow = light ? '0 0 10px rgba(50,160,80,0.5)' : '0 0 10px rgba(74,222,128,0.5)';
   } else {
-    // blue — normal organism
     var alpha = 0.45;
     el.style.width = '10px';
     el.style.height = '10px';
@@ -398,10 +335,7 @@ function styleOrganism(el, org) {
   }
 }
 
-// ─── TRAIL LINES ──────────────────────────────────────────────────────────────
-
 function addTrailSegment(x1, y1, x2, y2, isElite) {
-  // keep trail count under the limit
   if (sim.trailSegments.length >= MAX_TRAILS) {
     var old = sim.trailSegments.shift();
     if (old.el.parentNode) old.el.parentNode.removeChild(old.el);
@@ -466,8 +400,6 @@ function clearAllTrails() {
   sim.trailSegments = [];
 }
 
-// ─── CLEAR ORGANISMS FROM THE SCREEN ─────────────────────────────────────────
-
 function clearOrganisms() {
   for (var i = 0; i < sim.elems.length; i++) {
     if (sim.elems[i] && sim.elems[i].parentNode) {
@@ -476,8 +408,6 @@ function clearOrganisms() {
   }
   sim.elems = [];
 }
-
-// ─── BEST PATH DRAWING ───────────────────────────────────────────────────────
 
 function clearBestPath() {
   for (var i = 0; i < sim.bestPathElems.length; i++) {
@@ -525,8 +455,6 @@ function drawBestPath(path, persist) {
   }
 }
 
-// ─── UPDATE THE STATS PANEL ON THE RIGHT ─────────────────────────────────────
-
 function updateStatDisplay() {
   var count = (sim.running || sim.paused) ? sim.organisms.length : parseInt(populationSlider.value);
   statRows[0].textContent = count;
@@ -536,8 +464,6 @@ function updateStatDisplay() {
     statRows[2].textContent = '0';
     return;
   }
-
-  // find nearest organism to goal
   var nearest = Infinity;
   for (var i = 0; i < sim.organisms.length; i++) {
     var d = dist(sim.organisms[i].x, sim.organisms[i].y, goalX, goalY);
@@ -547,8 +473,6 @@ function updateStatDisplay() {
   statRows[1].textContent = distLabel;
   statRows[2].textContent = sim.generation;
 }
-
-// ─── SET THE STATUS BAR AT THE TOP ───────────────────────────────────────────
 
 function setStatus(state) {
   statusPill.className = 'status-pill';
@@ -581,19 +505,11 @@ function setStatus(state) {
   }
 }
 
-// ─── THE MAIN TICK FUNCTION — RUNS EVERY 28ms ─────────────────────────────────
-// This is the heart of the simulation. Each tick we move every organism forward
-// by one step using their genes, then check if any reached the goal.
-
 function doTick() {
   if (!sim.running || sim.transitioning) return;
 
   var genLen = parseInt(generationSlider.value);
   sim.tick++;
-
-  // ── STEP 1: Find who is currently closest to goal RIGHT NOW ──────────────
-  // This is how we pick the yellow (elite) organism in real time.
-  // We compare CURRENT distance to goal — whoever is closest becomes the star.
   var bestDistNow = Infinity;
   var bestIdxNow = 0;
   for (var k = 0; k < sim.organisms.length; k++) {
@@ -604,48 +520,37 @@ function doTick() {
     }
   }
 
-  // Update elite status — only the current closest gets the yellow highlight
   for (var m = 0; m < sim.organisms.length; m++) {
     sim.organisms[m].elite = false;
   }
   sim.organisms[bestIdxNow].elite = true;
   sim.currentBestIdx = bestIdxNow;
 
-  // ── STEP 2: Move every organism ──────────────────────────────────────────
   var reachedAny = false;
   var winnerOrg = null;
 
   for (var i = 0; i < sim.organisms.length; i++) {
     var org = sim.organisms[i];
-    if (org.reached) continue; // already at goal, don't move
-
-    // which gene to use this tick — we spread genes evenly across the generation
+    if (org.reached) continue;
     var geneIdx = Math.floor((sim.tick / genLen) * org.genes.length);
     if (geneIdx >= org.genes.length) geneIdx = org.genes.length - 1;
     var g = org.genes[geneIdx];
-
-    // apply the gene as an acceleration, with a little momentum
     org.vx = org.vx * 0.82 + g.ax * SPEED;
     org.vy = org.vy * 0.82 + g.ay * SPEED;
 
-    // move the organism
     org.x += org.vx;
     org.y += org.vy;
 
-    // keep inside the screen
     org.x = Math.max(5, Math.min(window.innerWidth - 5, org.x));
     org.y = Math.max(48, Math.min(window.innerHeight - 5, org.y));
 
-    // track the closest it ever got to the goal
     var currDist = dist(org.x, org.y, goalX, goalY);
     if (currDist < org.closestDist) org.closestDist = currDist;
     org.prevDist = currDist;
 
-    // track total distance traveled
     var moved = dist(org.x, org.y, org.lastX, org.lastY);
     org.totalDist += moved;
 
-    // check if it reached the goal
     if (currDist < GOAL_RADIUS) {
       org.reached = true;
       org.reachedTick = sim.tick;
@@ -653,26 +558,22 @@ function doTick() {
       if (!winnerOrg) winnerOrg = org;
     }
 
-    // draw trail lines every few ticks
     if (sim.tick % TRAIL_INTERVAL === 0) {
       addTrailSegment(org.lastX, org.lastY, org.x, org.y, org.elite);
       org.lastX = org.x;
       org.lastY = org.y;
     }
 
-    // record the path for the best organism so we can draw it later
     if (i === bestIdxNow && sim.tick % PATH_RECORD_INTERVAL === 0) {
       org.path.push({ x: org.x, y: org.y });
     }
 
-    // update the dot on screen
     if (sim.elems[i]) {
       moveElem(sim.elems[i], org.x, org.y);
       styleOrganism(sim.elems[i], org);
     }
   }
 
-  // ── STEP 3: Update goal glow based on proximity ──────────────────────────
   var nearest = Infinity;
   for (var n = 0; n < sim.organisms.length; n++) {
     var nd = dist(sim.organisms[n].x, sim.organisms[n].y, goalX, goalY);
@@ -688,7 +589,6 @@ function doTick() {
 
   updateStatDisplay();
 
-  // ── STEP 4: If something reached the goal, handle it ────────────────────
   if (reachedAny) {
     sim.goalReachCount++;
     if (sim.firstGoalGen < 0) sim.firstGoalGen = sim.generation;
@@ -699,35 +599,26 @@ function doTick() {
     }
   }
 
-  // ── STEP 5: End the generation when ticks run out ───────────────────────
   if (sim.tick >= genLen) {
     endGeneration();
   }
 }
 
-// ─── END OF A GENERATION — SCORE, SELECT, REPRODUCE ─────────────────────────
-
 function endGeneration() {
   sim.transitioning = true;
   clearInterval(sim.tickInterval);
-
-  // score every organism
   for (var i = 0; i < sim.organisms.length; i++) {
     sim.organisms[i].fitness = calcFitness(sim.organisms[i], parseInt(generationSlider.value));
   }
 
-  // sort by fitness, best first
   var sorted = sim.organisms.slice().sort(function(a, b) { return b.fitness - a.fitness; });
   var bestOrg = sorted[0];
   var bestF = bestOrg.fitness;
-
-  // save if this is the best path we've ever seen
   if (bestF > sim.bestEverFitness) {
     sim.bestEverFitness = bestF;
     sim.bestEverPath = bestOrg.path.slice();
   }
 
-  // save a snapshot every 5 generations for the report
   if (sim.generation % 5 === 0 && bestOrg.path.length > 1) {
     sim.pathSnapshots.push({ gen: sim.generation, path: bestOrg.path.slice() });
     if (sim.pathSnapshots.length > 8) sim.pathSnapshots.shift();
@@ -735,12 +626,9 @@ function endGeneration() {
 
   sim.history.push({ gen: sim.generation, bestFitness: bestF, path: bestOrg.path.slice() });
 
-  // how many survive to next generation
   var selPressure = parseInt(selectionSlider.value) / 100;
   var keepCount = Math.max(1, Math.round(sorted.length * selPressure));
   var survivors = sorted.slice(0, keepCount);
-
-  // check for stagnation (no improvement)
   if (bestF <= sim.lastBestFitness * 1.008) {
     sim.stagnantGens++;
   } else {
@@ -758,7 +646,6 @@ function endGeneration() {
   fadeAllTrailSegments();
   drawBestPath(bestOrg.path);
 
-  // little flash effect between generations
   var light = document.documentElement.getAttribute('data-theme') === 'light';
   var flashColor = light ? 'rgba(176,106,16,0.06)' : 'rgba(56,189,248,0.05)';
   var overlay = document.createElement('div');
@@ -767,7 +654,6 @@ function endGeneration() {
   setTimeout(function() { overlay.style.opacity = '0'; }, 250);
   setTimeout(function() { if (overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 750);
 
-  // short pause, then build the next generation
   setTimeout(function() {
     if (!sim.running) { sim.transitioning = false; return; }
 
@@ -783,7 +669,6 @@ function endGeneration() {
 
     var genLen = parseInt(generationSlider.value);
     var baseMutRate = parseInt(mutationSlider.value) / 100;
-    // if stagnating, boost mutation a lot to escape local trap
     var mutRate = boostActive ? Math.min(0.55, baseMutRate * 4) : baseMutRate;
 
     var spawnX = window.innerWidth * SPAWN_X_RATIO;
@@ -792,15 +677,10 @@ function endGeneration() {
     var newOrgs = [];
     var injectCount = boostActive ? Math.max(3, Math.floor(totalNeeded * 0.12)) : 0;
 
-    // keep the best organism's genes exactly (elitism — top performer always survives)
     var sx0 = spawnX + rnd(-30, 30);
     var sy0 = spawnY + rnd(-20, 20);
     newOrgs.push(makeOrganism(sx0, sy0, survivors[0].genes.slice()));
 
-    // Fitness-weighted parent selection.
-    // Each survivor gets "tickets" proportional to their fitness.
-    // Better performers are more likely to be chosen as parents.
-    // This is natural selection — fitter organisms have more offspring.
     var totalFitness = 0;
     for (var t = 0; t < survivors.length; t++) {
       totalFitness += survivors[t].fitness;
@@ -815,18 +695,15 @@ function endGeneration() {
       return survivors[survivors.length - 1];
     }
 
-    // fill the rest with children of survivors
     while (newOrgs.length < totalNeeded - injectCount) {
       var pA = pickParent();
       var pB = pickParent();
-      // crossover combines genes from two parents, mutation adds variation
       var childGenes = mutateGenes(crossover(pA.genes, pB.genes), mutRate);
       var sx = spawnX + rnd(-30, 30);
       var sy = spawnY + rnd(-20, 20);
       newOrgs.push(makeOrganism(sx, sy, childGenes));
     }
 
-    // inject fully random organisms if stagnating
     for (var j = 0; j < injectCount; j++) {
       var rx = spawnX + rnd(-30, 30);
       var ry = spawnY + rnd(-20, 20);
@@ -844,8 +721,6 @@ function endGeneration() {
   }, 600);
 }
 
-// ─── FINISH THE SIMULATION ───────────────────────────────────────────────────
-
 function finishSimulation(winnerOrg) {
   clearInterval(sim.tickInterval);
   sim.running = false;
@@ -859,8 +734,6 @@ function finishSimulation(winnerOrg) {
   } else if (sim.bestEverPath.length > 1) {
     drawBestPath(sim.bestEverPath);
   }
-
-  // mark remaining organisms visually
   for (var i = 0; i < sim.organisms.length; i++) {
     var el = sim.elems[i];
     if (!el) continue;
@@ -881,8 +754,6 @@ function finishSimulation(winnerOrg) {
 
   setTimeout(function() { showAnalytics(winnerOrg); }, 1200);
 }
-
-// ─── ANALYTICS REPORT ────────────────────────────────────────────────────────
 
 function showAnalytics(winnerOrg) {
   var totalGens = sim.generation;
@@ -921,8 +792,6 @@ function showAnalytics(winnerOrg) {
   analyticsPanel.classList.add('open');
 }
 
-// ─── FITNESS CHART ───────────────────────────────────────────────────────────
-
 function buildFitnessChart(history) {
   var chart = document.getElementById('fitness-chart');
   chart.innerHTML = '';
@@ -947,16 +816,11 @@ function buildFitnessChart(history) {
   }
 }
 
-// ─── PATH SNAPSHOT VIEW (in the report) ──────────────────────────────────────
-// Each snapshot is a small thumbnail showing how the best organism moved.
-// Clicking one opens a bigger modal view.
-
 function buildPathSnapshotView(winnerOrg) {
   var container = document.getElementById('path-snapshots');
   if (!container) return;
   container.innerHTML = '';
 
-  // collect all snapshots
   var snaps = sim.pathSnapshots.slice();
   if (winnerOrg && winnerOrg.path.length > 1) {
     snaps.push({ gen: sim.generation, path: winnerOrg.path });
@@ -972,12 +836,10 @@ function buildPathSnapshotView(winnerOrg) {
   var fieldW = window.innerWidth;
   var fieldH = window.innerHeight;
 
-  // bigger thumbnails so they're actually readable
   var snapW = 180;
   var snapH = 120;
 
   for (var idx = 0; idx < snaps.length; idx++) {
-    // we use a closure to capture idx and snap properly
     (function(snap, snapIdx) {
       var isLast = snapIdx === snaps.length - 1;
 
@@ -993,7 +855,6 @@ function buildPathSnapshotView(winnerOrg) {
         'background:var(--accent-dim);border:1px solid var(--glass-border);border-radius:8px;overflow:hidden;' +
         'transition:border-color 0.2s,box-shadow 0.2s;';
 
-      // hover effect
       canvas.addEventListener('mouseenter', function() {
         canvas.style.borderColor = 'var(--accent)';
         canvas.style.boxShadow = '0 0 12px var(--accent-glow)';
@@ -1006,7 +867,6 @@ function buildPathSnapshotView(winnerOrg) {
       var scaleX = snapW / fieldW;
       var scaleY = snapH / fieldH;
 
-      // draw the goal dot
       var gx = Math.round(goalX * scaleX);
       var gy = Math.round(goalY * scaleY);
       var goalDot = document.createElement('div');
@@ -1014,7 +874,6 @@ function buildPathSnapshotView(winnerOrg) {
         'left:' + (gx - 4) + 'px;top:' + (gy - 4) + 'px;box-shadow:0 0 8px var(--accent);';
       canvas.appendChild(goalDot);
 
-      // draw the path as line segments
       var path = snap.path;
       for (var i = 1; i < path.length; i++) {
         var p0 = path[i - 1];
@@ -1044,7 +903,6 @@ function buildPathSnapshotView(winnerOrg) {
         canvas.appendChild(seg);
       }
 
-      // draw spawn dot (green)
       var sdx = Math.round(window.innerWidth * SPAWN_X_RATIO * scaleX);
       var sdy = Math.round(window.innerHeight * SPAWN_Y_RATIO * scaleY);
       var spawnDot = document.createElement('div');
@@ -1052,7 +910,6 @@ function buildPathSnapshotView(winnerOrg) {
         'left:' + (sdx - 2) + 'px;top:' + (sdy - 2) + 'px;box-shadow:0 0 5px rgba(74,222,128,0.6);';
       canvas.appendChild(spawnDot);
 
-      // "click to expand" hint
       var hint = document.createElement('div');
       hint.style.cssText = 'position:absolute;bottom:4px;right:6px;font-family:"Share Tech Mono",monospace;' +
         'font-size:8px;color:var(--text-muted);opacity:0.6;pointer-events:none;';
@@ -1063,7 +920,6 @@ function buildPathSnapshotView(winnerOrg) {
       wrapper.appendChild(canvas);
       container.appendChild(wrapper);
 
-      // clicking opens a big modal with the path
       wrapper.addEventListener('click', function() {
         openPathModal(snap, isLast);
       });
@@ -1071,17 +927,13 @@ function buildPathSnapshotView(winnerOrg) {
   }
 }
 
-// ─── PATH MODAL (big popup when you click a snapshot) ────────────────────────
-
 function openPathModal(snap, isLast) {
-  // remove any existing modal
   var existing = document.getElementById('path-modal');
   if (existing) existing.parentNode.removeChild(existing);
 
   var fieldW = window.innerWidth;
   var fieldH = window.innerHeight;
 
-  // modal size — big but fits the screen
   var modalW = Math.min(700, fieldW * 0.85);
   var modalH = Math.min(460, fieldH * 0.7);
 
@@ -1093,8 +945,6 @@ function openPathModal(snap, isLast) {
   var box = document.createElement('div');
   box.style.cssText = 'position:relative;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;' +
     'padding:20px;width:' + modalW + 'px;';
-
-  // title bar
   var titleRow = document.createElement('div');
   titleRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;';
 
@@ -1114,15 +964,12 @@ function openPathModal(snap, isLast) {
   titleRow.appendChild(closeBtn);
   box.appendChild(titleRow);
 
-  // the big path canvas
   var canvas = document.createElement('div');
   canvas.style.cssText = 'position:relative;width:100%;height:' + modalH + 'px;' +
     'background:var(--field-bg);border:1px solid var(--glass-border);border-radius:8px;overflow:hidden;';
 
   var scaleX = (modalW - 40) / fieldW;
   var scaleY = modalH / fieldH;
-
-  // goal dot
   var gx = Math.round(goalX * scaleX);
   var gy = Math.round(goalY * scaleY);
   var goalDot = document.createElement('div');
@@ -1136,7 +983,6 @@ function openPathModal(snap, isLast) {
   goalLabel.textContent = 'TARGET';
   canvas.appendChild(goalLabel);
 
-  // draw path segments
   var path = snap.path;
   for (var i = 1; i < path.length; i++) {
     var p0 = path[i - 1];
@@ -1168,8 +1014,6 @@ function openPathModal(snap, isLast) {
     }
     canvas.appendChild(seg);
   }
-
-  // spawn dot
   var sdx = Math.round(window.innerWidth * SPAWN_X_RATIO * scaleX);
   var sdy = Math.round(window.innerHeight * SPAWN_Y_RATIO * scaleY);
   var spawnDot = document.createElement('div');
@@ -1186,8 +1030,6 @@ function openPathModal(snap, isLast) {
   box.appendChild(canvas);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
-
-  // click outside the box to close
   overlay.addEventListener('click', function(e) {
     if (e.target === overlay) {
       overlay.parentNode.removeChild(overlay);
@@ -1195,16 +1037,11 @@ function openPathModal(snap, isLast) {
   });
 }
 
-// ─── CLOSE ANALYTICS ─────────────────────────────────────────────────────────
-
 analyticsDismiss.addEventListener('click', function() {
   analyticsPanel.classList.remove('open');
 });
 
-// ─── START / PAUSE / END BUTTONS ─────────────────────────────────────────────
-
 function startSim() {
-  // if paused, just resume
   if (sim.paused) {
     sim.paused = false;
     sim.running = true;
@@ -1212,8 +1049,6 @@ function startSim() {
     sim.tickInterval = setInterval(doTick, TICK_MS);
     return;
   }
-
-  // fresh start — reset everything
   clearOrganisms();
   clearAllTrails();
   clearBestPath();
@@ -1237,8 +1072,6 @@ function startSim() {
   sim.bestEverFitness = 0;
   sim.pathSnapshots = [];
   sim.currentBestIdx = 0;
-
-  // remove any leftover winner styling
   var oldWinners = document.querySelectorAll('.organism-winner');
   for (var i = 0; i < oldWinners.length; i++) {
     oldWinners[i].classList.remove('organism-winner');
@@ -1284,8 +1117,6 @@ function endSim() {
 btnStart.addEventListener('click', startSim);
 btnPause.addEventListener('click', pauseSim);
 btnEnd.addEventListener('click', endSim);
-
-// ─── INITIAL STATE ────────────────────────────────────────────────────────────
 
 updateStatDisplay();
 setStatus('ready');

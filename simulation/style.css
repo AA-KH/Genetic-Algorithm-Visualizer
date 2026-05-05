@@ -633,8 +633,6 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-primary);
   line-height: 1.6;
   font-style: italic;
-  /* margin-bottom: 4px;
-  margin-top: 4px; */
 }
 
 .guide-section {
